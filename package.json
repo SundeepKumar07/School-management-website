@@ -9,19 +9,37 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/elements": "^0.23.59",
+    "@clerk/nextjs": "^6.31.6",
+    "@hookform/resolvers": "^5.2.1",
+    "@prisma/client": "^6.14.0",
+    "@types/react-big-calendar": "^1.16.2",
+    "framer-motion": "^12.23.12",
+    "next": "15.4.7",
+    "next-cloudinary": "^6.16.0",
     "react": "19.1.0",
+    "react-big-calendar": "^1.19.4",
+    "react-calendar": "^6.0.0",
     "react-dom": "19.1.0",
-    "next": "15.4.7"
+    "react-hook-form": "^7.62.0",
+    "react-toastify": "^11.0.5",
+    "recharts": "^3.1.2",
+    "sqlite3": "^5.1.7",
+    "ts-node": "^10.9.2",
+    "zod": "^4.1.1"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "24.3.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.4.7",
-    "@eslint/eslintrc": "^3"
+    "prisma": "^6.14.0",
+    "tailwindcss": "^4"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }
