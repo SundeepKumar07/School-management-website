@@ -4,10 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod'; // or 'zod/v4'
 import InputFormField from '../InputFormField';
 import Image from 'next/image';
-import { Dispatch, SetStateAction, startTransition, useActionState, useState } from 'react';
+import { Dispatch, SetStateAction, startTransition, useActionState, useEffect, useState } from 'react';
 import { CldUploadWidget } from 'next-cloudinary';
 import { createStudent, updateStudent } from '@/lib/action';
 import { studentSchema } from '@/lib/formValidatorSchema';
+import { toast } from 'react-toastify';
 
 //Input Type
 type Inputs = z.infer<typeof studentSchema>
@@ -43,7 +44,7 @@ const StudentForm = ({ type, data, setOpen, relatedData }:
             : {},
     });
 
-    const [state, formAction] = useActionState(
+    const [state, formAction, isPending] = useActionState(
         type === "create" ? createStudent : updateStudent,
         { success: false, error: false }
     );
@@ -61,15 +62,36 @@ const StudentForm = ({ type, data, setOpen, relatedData }:
             }
         });
 
-        startTransition(() => {
             formAction(formData);
-        });
         if (setOpen !== undefined)
             setOpen(false)
     };
 
     const [imgData, setImgData] = useState<any>();
 
+    useEffect(() => {
+        if (state.success && setOpen) {
+            setOpen(false);
+            toast.success("Event created!", {
+                style: {
+                    background: "#e8f5e9",   // light green background
+                    color: "#2e7d32",        // text color
+                    border: "1px solid #4caf50",
+                    borderRadius: "8px",
+                },
+            })
+        }
+        if (state.error) {
+            toast.error("Something went wrong!", {
+                style: {
+                    background: "#ffebee",   // light red background
+                    color: "#b71c1c",
+                    border: "1px solid #f44336",
+                    borderRadius: "8px",
+                },
+            });
+        }
+    }, [state.success]);
     return (
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-2'>
             <h1 className='text-xl font-semibold'>{type === 'create' ? `Create new Student` : `Update Student`}</h1>
@@ -155,7 +177,9 @@ const StudentForm = ({ type, data, setOpen, relatedData }:
                     {state.error && <p className='text-xs text-red-500'>Something went Wrong</p>}
                 </div>
             </div>
-            <input type="submit" className='bg-blue-500 text-white w-full md:w-1/6 p-2 rounded-md font-bold' />
+            <button type="submit" disabled={isPending} className='bg-blue-400 w-full md:w-20 p-2 rounded-md'>
+                {isPending ? 'Saving...' : type === 'create' ? 'Create' : 'Update'}
+            </button>
         </form>
     );
 };

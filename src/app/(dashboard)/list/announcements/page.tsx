@@ -3,11 +3,11 @@ import React from 'react'
 import Image from 'next/image'
 import Pagination from '@/app/components/Pagination'
 import Table from '@/app/components/Table'
-import FormModel from '@/app/components/FormModel'
 import getRole, { getUserId } from '@/lib/utils'
 import { Announcement, Class, Prisma } from '@/generated/prisma'
 import prisma from '@/lib/prisma'
 import { ITEM_PER_PAGE } from '@/lib/setting'
+import FormContainer from '@/app/components/FormContainer'
 // Announcemnt model or type 
 type announcementList = Announcement & { class: Class };
 // table headers 
@@ -34,17 +34,17 @@ const AnnouncementListPage = async ({ searchParams }: { searchParams: { [key: st
             }
         }
     }
-    const roleConditions = {
-        teacher: {lessons: {some: {teacherId: userId?.toString()}}},
-        student: {students: {some: {id: userId?.toString()}}},
-        parent: {students: {some: {parentId: userId?.toString()}}},
-    }
-    query.OR = [
-        {
-            class: roleConditions[role as keyof typeof roleConditions] || {}
-        },
-        {classId: null},
-    ]
+    // const roleConditions = {
+    //     teacher: {lessons: {some: {teacherId: userId?.toString()}}},
+    //     student: {students: {some: {id: userId?.toString()}}},
+    //     parent: {students: {some: {parentId: userId?.toString()}}},
+    // }
+    // query.OR = [
+    //     {
+    //         class: roleConditions[role as keyof typeof roleConditions] || {}
+    //     },
+    //     {classId: null},
+    // ]
 
     const [data, count] = await prisma.$transaction([
         prisma.announcement.findMany({
@@ -84,14 +84,14 @@ const AnnouncementListPage = async ({ searchParams }: { searchParams: { [key: st
     const renderRow = (item: announcementList) => (
         <tr className='text-sm odd:bg-white even:bg-gray-200 p-2 h-10 hover:bg-blue-50' key={item.id}>
             <td className='font-semibold'>{item.title}</td>
-            <td className='hidden md:table-cell'>{item.class?.name || '...'}</td>
+            <td className='hidden md:table-cell'>{item.class?.name || 'All classes'}</td>
             <td className='hidden lg:table-cell'>{new Intl.DateTimeFormat('en-US').format(item.date)}</td>
             <td>
                 <div className='flex gap-3 items-center'>
                     {role === 'admin' && (
                         <>
-                            <FormModel table='announcement' type='delete' data={item} id={item.id} />
-                            <FormModel table='announcement' type='update' data={item} id={item.id} />
+                            <FormContainer table='announcement' type='delete' data={item} id={item.id} />
+                            <FormContainer table='announcement' type='update' data={item} id={item.id} />
                         </>
                     )}
                 </div>
@@ -114,7 +114,7 @@ const AnnouncementListPage = async ({ searchParams }: { searchParams: { [key: st
                             <Image src={'/sort.png'} alt='filter' width={18} height={18} />
                         </button>
                         {role === 'admin' && (
-                            <FormModel table='announcement' type='create' />
+                            <FormContainer table='announcement' type='create' />
                         )}
                     </div>
                 </div>

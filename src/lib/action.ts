@@ -7,17 +7,26 @@ type CurrentState = {
     success: boolean,
     error: boolean
 }
+
+//helper functions
 const relationSetter = (items: string[]) => {
-  return items.length > 0
-    ? { set: items.map((id) => ({ id: parseInt(id) })) }
-    : undefined;
+    return items.length > 0
+        ? { set: items.map((id) => ({ id: parseInt(id) })) }
+        : undefined;
 };
 
 const relationCreatorSetter = (items: string[]) => {
-  return items.length > 0
-    ? { connect: items.map((id) => ({ id: parseInt(id) })) }
-    : undefined;
+    return items.length > 0
+        ? { connect: items.map((id) => ({ id: parseInt(id) })) }
+        : undefined;
 };
+
+function combineDateWithTime(timeStr: string) {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    const now = new Date();
+    now.setHours(hours, minutes, 0, 0); // set to chosen time
+    return now;
+}
 
 export const createSubject = async (currentState: CurrentState, data: any) => {
     try {
@@ -250,7 +259,7 @@ export const updateTeacher = async (prevState: { success: boolean; error: boolea
                 classes: relationSetter(classes),
                 lessons: relationSetter(lessons),
             }
-            });
+        });
         revalidatePath('/list/teachers');
         return { success: true, error: false };
     } catch (error: any) {
@@ -284,6 +293,7 @@ export const deleteTeacher = async (currentState: CurrentState, data: FormData):
         return { success: false, error: true }
     }
 }
+
 export const createStudent = async (currentState: CurrentState, data: any) => {
     try {
         const username = data?.get("username") as string;
@@ -389,7 +399,7 @@ export const updateStudent = async (prevState: { success: boolean; error: boolea
                 gradeId,
                 parentId,
             }
-            });
+        });
         revalidatePath('/list/students');
         return { success: true, error: false };
     } catch (error: any) {
@@ -496,7 +506,6 @@ export const updateParent = async (prevState: { success: boolean; error: boolean
                 id,
             },
             data: {
-                id,
                 username,
                 name,
                 surname,
@@ -504,7 +513,7 @@ export const updateParent = async (prevState: { success: boolean; error: boolean
                 phone,
                 address,
             }
-            });
+        });
         revalidatePath('/list/teachers');
         return { success: true, error: false };
     } catch (error: any) {
@@ -538,3 +547,493 @@ export const deleteParent = async (currentState: CurrentState, data: FormData): 
         return { success: false, error: true }
     }
 }
+
+export const createLesson = async (currentState: CurrentState, data: any) => {
+    try {
+        const name = data?.get("name") as string;
+        const day = data?.get("day") as "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY";
+        const startTime = combineDateWithTime(data?.get("startTime") as string);
+        const endTime = combineDateWithTime(data?.get("endTime") as string);
+        const subjectId = parseInt(data?.get("subjectId") as string);
+        const classId = parseInt(data?.get("classId") as string);
+        const teacherId = data?.get("teacherId") as string;
+
+        // Now create lesson in your database
+        await prisma.lesson.create({
+            data: {
+                name,
+                day,
+                startTime: new Date(startTime),
+                endTime: new Date(endTime),
+                subjectId,
+                classId,
+                teacherId,
+            }
+        });
+
+        revalidatePath('/list/lessons');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const updateLesson = async (prevState: { success: boolean; error: boolean }, data: FormData): Promise<{
+    success: boolean;
+    error: boolean;
+}> => {
+    try {
+        const id = parseInt(data?.get("id") as string);
+        const name = data?.get("name") as string;
+        const day = data?.get("day") as "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY";
+        const startTime = combineDateWithTime(data?.get("startTime") as string);
+        const endTime = combineDateWithTime(data?.get("endTime") as string);
+        const subjectId = parseInt(data?.get("subjectId") as string);
+        const classId = parseInt(data?.get("classId") as string);
+        const teacherId = data?.get("teacherId") as string;
+
+        // Now updating teacher in your database
+        await prisma.lesson.update({
+            where: {
+                id,
+            },
+            data: {
+                name,
+                day,
+                startTime,
+                endTime,
+                subjectId,
+                classId,
+                teacherId,
+            }
+        });
+        revalidatePath('/list/lessons');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const deleteLesson = async (currentState: CurrentState, data: FormData): Promise<CurrentState> => {
+    try {
+        const lessonId = parseInt(data.get("id") as string);
+        await prisma.lesson.delete({
+            where: {
+                id: lessonId,
+            },
+        })
+
+        revalidatePath('/list/lessons');
+        return { success: true, error: false }
+    } catch (error) {
+        console.log(error);
+        return { success: false, error: true }
+    }
+}
+
+export const createExam = async (currentState: CurrentState, data: any) => {
+    try {
+        const title = data?.get("title") as string;
+        const startTime = new Date(data?.get("startTime") as string);
+        const endTime = new Date(data?.get("endTime") as string);
+        const lessonId = parseInt(data?.get("lessonId") as string);
+
+        // Now create lesson in your database
+        await prisma.exam.create({
+            data: {
+                title,
+                startTime,
+                endTime,
+                lessonId,
+            }
+        });
+
+        revalidatePath('/list/exams');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const updateExam = async (prevState: { success: boolean; error: boolean }, data: FormData): Promise<{
+    success: boolean;
+    error: boolean;
+}> => {
+    try {
+        const id = parseInt(data?.get("id") as string);
+        const title = data?.get("title") as string;
+        const startTime = new Date(data?.get("startTime") as string);
+        const endTime = new Date(data?.get("endTime") as string);
+        const lessonId = parseInt(data?.get("lessonId") as string);
+
+        // Now updating teacher in your database
+        await prisma.exam.update({
+            where: {
+                id,
+            },
+            data: {
+                title,
+                startTime,
+                endTime,
+                lessonId,
+            }
+        });
+        revalidatePath('/list/exams');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const deleteExam = async (currentState: CurrentState, data: FormData): Promise<CurrentState> => {
+    try {
+        const examId = parseInt(data.get("id") as string);
+        await prisma.exam.delete({
+            where: {
+                id: examId,
+            },
+        })
+        revalidatePath('/list/exams');
+        return { success: true, error: false }
+    } catch (error) {
+        console.log(error);
+        return { success: false, error: true }
+    }
+}
+
+export const createAssignments = async (currentState: CurrentState, data: any) => {
+    try {
+        const title = data?.get("title") as string;
+        const startDate = new Date(data?.get("startTime") as string);
+        const dueDate = new Date(data?.get("endTime") as string);
+        const lessonId = parseInt(data?.get("lessonId") as string);
+
+        // Now create lesson in your database
+        await prisma.assignment.create({
+            data: {
+                title,
+                startDate,
+                dueDate,
+                lessonId,
+            }
+        });
+
+        revalidatePath('/list/assignments');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const updateAssignment = async (prevState: { success: boolean; error: boolean }, data: FormData): Promise<{
+    success: boolean;
+    error: boolean;
+}> => {
+    try {
+        const id = parseInt(data?.get("id") as string);
+        const title = data?.get("title") as string;
+        const startDate = new Date(data?.get("startDate") as string);
+        const dueDate = new Date(data?.get("dueDate") as string);
+        const lessonId = parseInt(data?.get("lessonId") as string);
+
+        // Now updating teacher in your database
+        await prisma.assignment.update({
+            where: {
+                id,
+            },
+            data: {
+                title,
+                startDate,
+                dueDate,
+                lessonId,
+            }
+        });
+        revalidatePath('/list/assignments');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const deleteAssignment = async (currentState: CurrentState, data: FormData): Promise<CurrentState> => {
+    try {
+        const assignmentId = parseInt(data.get("id") as string);
+        await prisma.assignment.delete({
+            where: {
+                id: assignmentId,
+            },
+        })
+        revalidatePath('/list/assignments');
+        return { success: true, error: false }
+    } catch (error) {
+        console.log(error);
+        return { success: false, error: true }
+    }
+}
+export const createEvent = async (currentState: CurrentState, data: any) => {
+    try {
+        const title = data?.get("title") as string;
+        const description = data?.get("description") as string;
+        const startDate = new Date(data?.get("startDate") as string);
+        const endDate = new Date(data?.get("endDate") as string);
+        const classId = parseInt(data?.get("classId") as string) || null;
+
+        // Now create lesson in your database
+        await prisma.event.create({
+            data: {
+                title,
+                description,
+                startDate,
+                endDate,
+                classId,
+            }
+        });
+
+        revalidatePath('/list/events');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const updateEvent = async (prevState: { success: boolean; error: boolean }, data: FormData): Promise<{
+    success: boolean;
+    error: boolean;
+}> => {
+    try {
+        const id = parseInt(data?.get("id") as string);
+        const title = data?.get("title") as string;
+        const description = data?.get("description") as string;
+        const startDate = new Date(data?.get("startDate") as string);
+        const endDate = new Date(data?.get("endDate") as string);
+        const classId = parseInt(data?.get("classId") as string) || null;
+
+        // Now updating teacher in your database
+        await prisma.event.update({
+            where: {
+                id,
+            },
+            data: {
+                title,
+                description,
+                startDate,
+                endDate,
+                classId,
+            }
+        });
+        revalidatePath('/list/events');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const deleteEvent = async (currentState: CurrentState, data: FormData): Promise<CurrentState> => {
+    try {
+        const eventId = parseInt(data.get("id") as string);
+        await prisma.event.delete({
+            where: {
+                id: eventId,
+            },
+        })
+        revalidatePath('/list/events');
+        return { success: true, error: false }
+    } catch (error) {
+        console.log(error);
+        return { success: false, error: true }
+    }
+}
+
+export const createAnnouncement = async (currentState: CurrentState, data: any) => {
+    try {
+        const title = data?.get("title") as string;
+        const description = data?.get("description") as string;
+        const date = new Date(data?.get("date") as string);
+        const classId = parseInt(data?.get("classId") as string) || null;
+
+        // Now create lesson in your database
+        await prisma.announcement.create({
+            data: {
+                title,
+                description,
+                date,
+                classId,
+            }
+        });
+
+        revalidatePath('/list/announcements');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const updateAnnouncement = async (prevState: { success: boolean; error: boolean }, data: FormData): Promise<{
+    success: boolean;
+    error: boolean;
+}> => {
+    try {
+        const id = parseInt(data?.get("id") as string);
+        const title = data?.get("title") as string;
+        const description = data?.get("description") as string;
+        const date = new Date(data?.get("date") as string);
+        const classId = parseInt(data?.get("classId") as string) || null;
+
+        // Now updating teacher in your database
+        await prisma.announcement.update({
+            where: {
+                id,
+            },
+            data: {
+                title,
+                description,
+                date,
+                classId,
+            }
+        });
+        revalidatePath('/list/announcements');
+        return { success: true, error: false };
+    } catch (error: any) {
+        if (error.clerkError) {
+            console.log('Clerk Error Details:', error.errors);
+            console.log('Status:', error.status);
+            console.log('Trace ID:', error.clerkTraceId);
+        } else if (error.prisma) {
+            console.log('Prisma error:', error.errors);
+        } else {
+            console.log('Other errors', error);
+        }
+        return { success: false, error: true };
+    }
+}
+
+export const deleteAnnouncement = async (currentState: CurrentState, data: FormData): Promise<CurrentState> => {
+    try {
+        const announcementId = parseInt(data.get("id") as string);
+        await prisma.announcement.delete({
+            where: {
+                id: announcementId,
+            },
+        })
+        revalidatePath('/list/announcements');
+        return { success: true, error: false }
+    } catch (error) {
+        console.log(error);
+        return { success: false, error: true }
+    }
+}
+
+export const createAttendence = async (currentState: CurrentState, data: FormData) => {
+  try {
+    const date = new Date(data.get("date") as string);
+    const lessonId = parseInt(data.get("lessonId") as string);
+
+    // Get all students & presents
+    const studentIds = (data.get("studentId") as string).split(',');
+    const presentValues = ((data.get("present") as string).split(',')).map(v => v === 'true');
+    
+    //=======delete attendence if available
+    await prisma.attendence.deleteMany({ where: { date, lessonId } });
+
+    // Loop and insert
+    for (let i = 0; i < studentIds.length; i++) {
+      await prisma.attendence.create({
+        data: {
+          date,
+          lessonId,
+          studentId: studentIds[i],   // keep as string ✅
+          present: presentValues[i],
+        },
+      });
+    }
+    console.log("attendenceMarked successfully")
+
+    revalidatePath("/list/mark-attendence");
+    return { success: true, error: false };
+
+  } catch (error: any) {
+    console.error("Attendence error:", error);
+    return { success: false, error: true };
+  }
+};

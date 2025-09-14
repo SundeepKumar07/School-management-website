@@ -4,8 +4,11 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer, toast } from 'react-toastify';
 
 export const metadata: Metadata = {
-  title: "SMS",
+  title: "SmartSchool",
   description: "Learning Next.js step by step",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

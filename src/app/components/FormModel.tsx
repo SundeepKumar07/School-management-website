@@ -1,7 +1,7 @@
 'use client';
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useActionState, useState } from "react";
+import { Dispatch, SetStateAction, useActionState, useEffect, useState } from "react";
 import TeacherForm from "./forms/TeacherForm";
 import StudentForm from "./forms/StudentForm";
 import ParentForm from "./forms/ParentForm";
@@ -13,8 +13,9 @@ import AssignmentForm from "./forms/AssignmentForm";
 import EventForm from "./forms/EventForm";
 import ResultForm from "./forms/ResultForm";
 import AnnouncementForm from "./forms/AnnouncementForm";
-import { deleteClass, deleteParent, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/action";
+import { deleteAnnouncement, deleteAssignment, deleteClass, deleteEvent, deleteExam, deleteLesson, deleteParent, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/action";
 import { Table } from "./FormContainer";
+import { toast } from "react-toastify";
 
 // const TeacherForm = dynamic(()=>import("./forms/TeacherForm"), {
 //   loading: () => <h1>Loading...</h1>
@@ -37,14 +38,14 @@ export default function FormModel({table, type, data, id, relatedData}: {
     student: deleteStudent,
     parent: deleteParent,
     teacher: deleteTeacher,
-    lesson: deleteSubject,
-    assignment: deleteSubject,
+    lesson: deleteLesson,
+    assignment: deleteAssignment,
     class: deleteClass,
-    exam: deleteSubject,
-    event: deleteSubject,
+    exam: deleteExam,
+    event: deleteEvent,
     result: deleteSubject,
     attendence: deleteSubject,
-    announcement: deleteSubject,
+    announcement: deleteAnnouncement,
   }
   //=====rendering different components======
   const forms: {
@@ -60,12 +61,12 @@ export default function FormModel({table, type, data, id, relatedData}: {
     parent: (type, data, setOpen) => <ParentForm type={type} data={data} setOpen={setOpen}/>,
     subject: (type, data, setOpen, relatedData) => <SubjectForm type={type} data={data} setOpen={setOpen} teachers={relatedData || []}/>,
     class: (type, data, setOpen, relatedData) => <ClassForm type={type} data={data} relatedData={relatedData} setOpen={setOpen}/>,
-    lesson: (type, data) => <LessonForm type={type} data={data} />,
-    exam: (type, data) => <ExamForm type={type} data={data} />,
-    assignment: (type, data) => <AssignmentForm type={type} data={data} />,
-    event: (type, data) => <EventForm type={type} data={data} />,
+    lesson: (type, data, setOpen, relatedData) => <LessonForm type={type} data={data} relatedData={relatedData} setOpen={setOpen} />,
+    exam: (type, data, setOpen, relatedData) => <ExamForm type={type} data={data} relatedData={relatedData} setOpen={setOpen} />,
+    assignment: (type, data, setOpen, relatedData) => <AssignmentForm type={type} data={data} relatedData={relatedData} setOpen={setOpen} />,
+    event: (type, data, setOpen, relatedData) => <EventForm type={type} data={data} relatedData={relatedData} setOpen={setOpen}/>,
     result: (type, data) => <ResultForm type={type} data={data} />,
-    announcement: (type, data) => <AnnouncementForm type={type} data={data} />,
+    announcement: (type, data, setOpen, relatedData) => <AnnouncementForm type={type} data={data} relatedData={relatedData} setOpen={setOpen}/>,
   }
 
   //======Form State========
@@ -84,6 +85,28 @@ export default function FormModel({table, type, data, id, relatedData}: {
       forms[table](type, data, setOpen, relatedData)
     ) : "Form not found";
   }
+
+  useEffect(() => {
+    if (state.success) {
+          toast.success("Attendence Marked!", {
+            style: {
+              background: "#e8f5e9",   // light green background
+              color: "#2e7d32",        // text color
+              border: "1px solid #4caf50",
+              borderRadius: "8px",
+            },
+          })
+        }
+        if (state.error) {
+      toast.error("Something went wrong!", {
+        style: {
+          background: "#ffebee",   // light red background
+          color: "#b71c1c",
+          border: "1px solid #f44336",
+          borderRadius: "8px",
+        },
+      });
+    }}, [state.success, state.error]);
   return (
     <>
       <div className="relative">

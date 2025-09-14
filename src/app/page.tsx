@@ -1,10 +1,13 @@
-import HomePage from "./sign-in/[[...sign-in]]/page";
+import getRole, { getUserId } from '@/lib/utils';
+import React from 'react'
+import HomePageContainer from './components/HomePageContainer';
 
-export default function Home() {
+const HomePage = async () => {
+  const userId = await getUserId();
+  const role = await getRole();
   return (
-    <main>
-      HomePage
-      {/* <HomePage/> */}
-    </main>
-  );
+    <HomePageContainer role={role?.toString()} userId={userId?.toString()}/>
+  )
 }
+
+export default HomePage;

@@ -3,12 +3,12 @@ import React from 'react'
 import Image from 'next/image'
 import Pagination from '@/app/components/Pagination'
 import Table from '@/app/components/Table'
-import FormModel from '@/app/components/FormModel'
 import prisma from '@/lib/prisma'
 import { ITEM_PER_PAGE } from '@/lib/setting'
 import { Class, Grade, Prisma, Student } from '@/generated/prisma'
 import getRole, { getUserId } from '@/lib/utils'
 import FormContainer from '@/app/components/FormContainer'
+import Link from 'next/link'
 
 type studentList = Student & { class: Class } & { grade: Grade };
 
@@ -85,6 +85,11 @@ const StudentsListPage = async ({ searchParams }: { searchParams: { [key: string
             <td className='hidden md:table-cell'>{item.address}</td>
             <td>
                 <div className='flex gap-3 items-center'>
+                    <Link href={`/list/students/${item.id}`}>
+                        <button className='cursor-pointer' title='view'>
+                            <Image src={'/view.png'} alt='view' width={20} height={20} className='rounded-full'/>
+                        </button>
+                    </Link>
                     {role === 'admin' && (
                         <>
                             <FormContainer table='student' type='delete' data={item} id={parseInt(item.id)} />

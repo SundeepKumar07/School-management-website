@@ -8,6 +8,7 @@ import { Class, Prisma, Subject, Teacher } from '@/generated/prisma'
 import { ITEM_PER_PAGE } from '@/lib/setting'
 import getRole from '@/lib/utils'
 import FormContainer from '@/app/components/FormContainer'
+import Link from 'next/link'
 
 // teacher model or type 
 type teacherList = Teacher & { subjects: Subject[], classes: Class[] }
@@ -31,6 +32,17 @@ const TeachersListPage = async ({ searchParams }: { searchParams: { [key: string
                         break;
                     case 'teacherId':
                         query.id = value;
+                        break;
+                    case 'studentId':
+                        query.classes = {
+                            some: {
+                                students: {
+                                    some: {
+                                        id: value,
+                                    }
+                                }
+                            }
+                        };
                         break;
                     default:
                         break;
@@ -104,6 +116,11 @@ const TeachersListPage = async ({ searchParams }: { searchParams: { [key: string
             <td className='hidden md:table-cell'>{item.address}</td>
             <td>
                 <div className='flex gap-3 items-center'>
+                    <Link href={`/list/teachers/${item.id}`}>
+                        <button className='cursor-pointer' title='view'>
+                            <Image src={'/view.png'} alt='view' width={20} height={20} className='rounded-full'/>
+                        </button>
+                    </Link>
                     {role === 'admin' && (
                         <>
                             <FormContainer table='teacher' type='delete' data={item} id={parseInt(item.id)} />

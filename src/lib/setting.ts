@@ -21,4 +21,15 @@ export const routeAccessMap: RouteAccessMap = {
     '/list/announcements(.*)' : ["admin", "teacher", "student", "parent"],
     '/list/assignments(.*)' : ["admin", "teacher", "student", "parent"],
     '/list/attendence(.*)' : ["admin", "teacher", "student", "parent"],
+    '/list/mark-attendence(.*)' : ["admin", "teacher"],
+}
+
+export function formatDateForInput(date: Date) {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function formatTimeForInput(date: Date) {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }

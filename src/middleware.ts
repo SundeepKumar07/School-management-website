@@ -11,9 +11,16 @@ export default clerkMiddleware(async (auth, req) => {
   // if (isProtectedRoute(req)) await auth.protect()
 
   const { sessionClaims, userId } = await auth();
-  // if (!userId) {
-  //   return NextResponse.redirect(new URL('/', req.url));
-  // }
+  const pathname = req.nextUrl.pathname;
+
+  // 🚨 1. Public routes (anyone can access, even without login)
+  const publicRoutes = ["/", "/sign-in"];
+  if (publicRoutes.includes(pathname)) {
+    return NextResponse.next();
+  }
+  if (!userId) {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
 
   const role = (sessionClaims?.metadata as {role?: string})?.role;
   for(const {matcher, allowedRules} of matchers){

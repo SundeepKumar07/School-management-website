@@ -36,12 +36,12 @@ const StudentCountContainer = async () => {
             <CountChart boys={boys} girls={girls}/>
             <div className="flex justify-between w-35 ">
                 <div className="flex flex-col items-center">
-                    <div className="w-5 h-5 rounded-full bg-[#C3EBFa]" />
+                    <div className="w-5 h-5 rounded-full bg-green-500" />
                     <span className="text-sm text-gray-500">{girls}</span>
                     <span className="text-xs text-gray-300">Girls {Math.round(girls / (girls + boys) * 100)}%</span>
                 </div>
                 <div className="flex flex-col items-center">
-                    <div className="w-5 h-5 rounded-full bg-[#FAE27C]" />
+                    <div className="w-5 h-5 rounded-full bg-blue-500" />
                     <span className="text-sm text-gray-500">{boys}</span>
                     <span className="text-xs text-gray-300">Boys {Math.round(boys / (girls + boys) * 100)}%</span>
                 </div>

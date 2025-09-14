@@ -22,7 +22,7 @@ const EventList = async ({ dateParams }: { dateParams: { [key: string]: string |
         <div>
             {data.length === 0 && <p className='text-sm text-center'>No Announcement Yet</p>}
             {data?.map((event) => (
-                <div key={event.id} className='p-2 justify-between odd:border-purple-200 even:border-amber-200 border-t-2'>
+                <div key={event.id} className='p-2 justify-between odd:border-green-200 even:border-blue-200 border-t-2'>
                     <div className='flex font-bold justify-between'>
                         <h1 className='text-sm'>{event.title} </h1>
                         <p className='text-gray-400 text-xs'>{event.startDate.toLocaleTimeString('en-US', {

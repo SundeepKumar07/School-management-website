@@ -3,11 +3,11 @@ import React from 'react'
 import Image from 'next/image'
 import Pagination from '@/app/components/Pagination'
 import Table from '@/app/components/Table'
-import FormModel from '@/app/components/FormModel'
 import { ITEM_PER_PAGE } from '@/lib/setting'
 import prisma from '@/lib/prisma'
 import { Class, Event, Prisma } from '@/generated/prisma'
 import getRole, { getUserId } from '@/lib/utils'
+import FormContainer from '@/app/components/FormContainer'
 // Events model or type 
 type eventList = Event & { class: Class };
 
@@ -33,17 +33,18 @@ const EventsListPage = async ({ searchParams }: { searchParams: { [key: string]:
             }
         }
     }
-    const roleConditions = {
-        teacher: {lessons: {some: {teacherId: userId?.toString()}}},
-        student: {students: {some: {id: userId?.toString()}}},
-        parent: {students: {some: {parentId: userId?.toString()}}},
-    }
-    query.OR = [
-        {
-            class: roleConditions[role as keyof typeof roleConditions] || {}
-        },
-        {classId: null},
-    ]
+    // const roleConditions = {
+    //     admin: {},
+    //     teacher: {lessons: {some: {teacherId: userId?.toString()}}},
+    //     student: {students: {some: {id: userId?.toString()}}},
+    //     parent: {students: {some: {parentId: userId?.toString()}}},
+    // }
+    // query.OR = [
+    //     {
+    //         class: roleConditions[role as keyof typeof roleConditions] || {}
+    //     },
+    //     {classId: null},
+    // ]
 
     const [data, count] = await prisma.$transaction([
         prisma.event.findMany({
@@ -93,7 +94,7 @@ const EventsListPage = async ({ searchParams }: { searchParams: { [key: string]:
     const renderRow = (item: eventList) => (
         <tr className='text-sm odd:bg-white even:bg-gray-200 p-2 h-10 hover:bg-blue-50' key={item.id}>
             <td className='font-semibold'>{item.title}</td>
-            <td className='hidden md:table-cell'>{item.class?.name || "..."}</td>
+            <td className='hidden md:table-cell'>{item.class?.name || "All classes"}</td>
             <td className='hidden lg:table-cell'>{new Intl.DateTimeFormat('en-US').format(item.startDate)}</td>
             <td className='hidden lg:table-cell'>{item.startDate.toLocaleTimeString('en-US')}</td>
             <td className='hidden lg:table-cell'>{item.endDate.toLocaleTimeString('en-US')}</td>
@@ -106,8 +107,8 @@ const EventsListPage = async ({ searchParams }: { searchParams: { [key: string]:
                 <div className='flex gap-3 items-center'>
                     {role === 'admin' && (
                         <>
-                            <FormModel table='event' type='delete' data={item} id={item.id} />
-                            <FormModel table='event' type='update' data={item} id={item.id} />
+                            <FormContainer table='event' type='delete' data={item} id={item.id} />
+                            <FormContainer table='event' type='update' data={item} id={item.id} />
                         </>
                     )}
                 </div>
@@ -129,7 +130,7 @@ const EventsListPage = async ({ searchParams }: { searchParams: { [key: string]:
                             <Image src={'/sort.png'} alt='filter' width={18} height={18} />
                         </button>
                         {role === 'admin' && (
-                            <FormModel table='event' type='create' />
+                            <FormContainer table='event' type='create' />
                         )}
                     </div>
                 </div>

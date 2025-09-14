@@ -1,6 +1,7 @@
 import getRole from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { SignOutButton } from "./SignOutAndProfile";
 // import { role } from "@/lib/data";
 
 const menuItems = [
@@ -111,7 +112,7 @@ const menuItems = [
       {
         icon: "/logout.png",
         label: "Logout",
-        href: "/logout",
+        href: "/admin",
         visible: ["admin", "teacher", "student", "parent"],
       },
     ],
@@ -122,21 +123,28 @@ const Menu = async () => {
   const role = await getRole();
   return (
     <div className="flex flex-col gap-2">
-      {menuItems.map((mainItem)=>(
+      {menuItems.map((mainItem) => (
         <div key={mainItem.title} className="flex flex-col gap-2">
           <span className="text-gray-300 font-bold lg:pl-0">{mainItem.title}</span>
-            {mainItem.items.map((item)=>{
-              if(item.visible.includes(role)){
-                return (
-                  (
-                    <Link href={item.href} key={item.label} title={item.label} className="cursor-pointer flex gap-2 justify-center items-center lg:justify-start lg:pl-3 rounded-md hover:bg-gray-100">
-                      <Image src={item.icon} alt="icon" width={20} height={20}/>
-                      <span className="hidden lg:block">{item.label}</span>
-                    </Link>
+          {mainItem.items.map((item) => {
+            if (item.visible.includes(role)) {
+              if (mainItem.title === 'OTHER' && item.label === 'Logout')
+                  return (
+                    <div key={item.label} className="cursor-pointer flex gap-2 justify-center items-center lg:justify-start lg:pl-3 rounded-md hover:bg-gray-100">
+                      <Image src={'/logout.png'} alt="icon" width={20} height={20} />
+                      <SignOutButton/>
+                    </div>
                   )
+              return (
+                (
+                  <Link href={item.href} key={item.label} title={item.label} className="cursor-pointer flex gap-2 justify-center items-center lg:justify-start lg:pl-3 rounded-md hover:bg-gray-100">
+                    <Image src={item.icon} alt="icon" width={20} height={20} />
+                    <span className="hidden lg:block">{item.label}</span>
+                  </Link>
                 )
-              }
-            })}
+              )
+            }
+          })}
         </div>
       ))}
     </div>

@@ -7,6 +7,7 @@ import { createSubject, updateSubject } from '@/lib/action';
 import { SubjectSchema } from '@/lib/formValidatorSchema';
 import { Dispatch, SetStateAction, useActionState, useEffect } from 'react';
 import { startTransition } from "react";
+import { toast } from 'react-toastify';
 
 //=======Subject form zod action=========
 type Inputs = z.infer<typeof SubjectSchema>
@@ -20,7 +21,7 @@ const SubjectForm = ({ type, data, setOpen, teachers }: { type: "create" | "upda
         defaultValues: data || {}
     });
 
-    const [state, formAction] = useActionState(
+    const [state, formAction, isPending] = useActionState(
         type === "create" ? createSubject : updateSubject,
         { success: false, error: false }
     );
@@ -34,9 +35,7 @@ const SubjectForm = ({ type, data, setOpen, teachers }: { type: "create" | "upda
             }
         });
 
-        startTransition(() => {
             formAction(formData);
-        });
         if(setOpen !== undefined)
         setOpen(false);
     };
@@ -44,6 +43,24 @@ const SubjectForm = ({ type, data, setOpen, teachers }: { type: "create" | "upda
     useEffect(() => {
         if (state.success && setOpen) {
             setOpen(false);
+            toast.success("Event created!", {
+                style: {
+                    background: "#e8f5e9",   // light green background
+                    color: "#2e7d32",        // text color
+                    border: "1px solid #4caf50",
+                    borderRadius: "8px",
+                },
+            })
+        }
+        if (state.error) {
+            toast.error("Something went wrong!", {
+                style: {
+                    background: "#ffebee",   // light red background
+                    color: "#b71c1c",
+                    border: "1px solid #f44336",
+                    borderRadius: "8px",
+                },
+            });
         }
     }, [state.success]);
 
@@ -69,7 +86,9 @@ const SubjectForm = ({ type, data, setOpen, teachers }: { type: "create" | "upda
                     />
                 )}
             </div>
-            <input type="submit" className='bg-blue-500 text-white w-full md:w-1/6 p-2 rounded-md font-bold' />
+            <button type="submit" disabled={isPending} className='bg-blue-400 w-full md:w-20 p-2 rounded-md'>
+                {isPending ? 'Saving...' : type === 'create' ? 'Create' : 'Update'}
+            </button>
         </form>
     );
 };

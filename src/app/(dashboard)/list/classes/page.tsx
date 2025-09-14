@@ -27,7 +27,7 @@ const ClassesListPage = async ({ searchParams }: { searchParams: { [key: string]
                     case 'classId':
                         query.id = parseInt(value);
                         break;
-                    case 'supervisorId':
+                    case 'teacherId':
                         query.supervisorId = value;
                         break;
                     default:

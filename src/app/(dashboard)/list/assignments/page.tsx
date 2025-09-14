@@ -3,7 +3,6 @@ import React from 'react'
 import Image from 'next/image'
 import Pagination from '@/app/components/Pagination'
 import Table from '@/app/components/Table'
-import FormModel from '@/app/components/FormModel'
 import { Assignment, Class, Prisma, Student, Subject, Teacher } from '@/generated/prisma'
 import prisma from '@/lib/prisma'
 import { ITEM_PER_PAGE } from '@/lib/setting'
@@ -145,9 +144,9 @@ const AssignmentsListPage = async ({ searchParams }: { searchParams: { [key: str
     const renderRow = (item: assignmentList) => (
         <tr className='text-sm odd:bg-white even:bg-gray-200 p-2 h-10 hover:bg-blue-50' key={item.id}>
             <td className='font-semibold'>{item.title}</td>
-            <td className='font-semibold'>{item.lesson.Subject.name}</td>
-            <td className='hidden md:table-cell'>{item.lesson.class.name}</td>
-            <td className='hidden lg:table-cell'>{item.lesson.teacher.name + " " + item.lesson.teacher.surname}</td>
+            <td className='font-semibold'>{item?.lesson?.Subject?.name || ''}</td>
+            <td className='hidden md:table-cell'>{item?.lesson?.class?.name || ''}</td>
+            <td className='hidden lg:table-cell'>{item?.lesson?.teacher? item?.lesson?.teacher?.name + " " + item?.lesson?.teacher?.surname : 'Not Assigned'}</td>
             <td className='hidden lg:table-cell'>{new Intl.DateTimeFormat('en-US').format(item.startDate)}</td>
             <td>
                 <div className='flex gap-3 items-center'>

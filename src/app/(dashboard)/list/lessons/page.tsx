@@ -98,7 +98,7 @@ const LessonsListPage = async ({ searchParams }: { searchParams: { [key: string]
             <td className='font-semibold'>{item.name}</td>
             <td className='font-semibold'>{item?.Subject?.name}</td>
             <td className='hidden md:table-cell'>{item?.class?.name}</td>
-            <td className='hidden lg:table-cell'>{item?.teacher?.name || ''}</td>
+            <td className='hidden lg:table-cell'>{item?.teacher? item?.teacher?.name + " " + item?.teacher?.surname : 'Not Assigned'}</td>
             <td>
                 <div className='flex gap-3 items-center'>
                     {role === 'admin' && (

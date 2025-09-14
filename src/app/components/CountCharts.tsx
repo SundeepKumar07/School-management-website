@@ -11,8 +11,8 @@ import {
 const CountChart = ({boys, girls}: {boys: number, girls: number}) => {
   const data = [
     { name: "Total", uv: boys+girls, fill: 'white' },
-    { name: "Boys", uv: boys, fill: "#FAE27C" },
-    { name: "Girls", uv: girls, fill: "#C3EBFa" },
+    { name: "Boys", uv: boys, fill: "#3498db" },
+    { name: "Girls", uv: girls, fill: "#07bc0c" },
   ];
   return (
     <div className="h-full w-full pt-5">

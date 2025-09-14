@@ -18,7 +18,7 @@ export default async function FormContainer({ table, type, data, id }:
         table: Table
         type: "create" | "update" | "delete";
         data?: any;
-        id?: number;
+        id?: number | string;
     }) {
     let relatedData: any;
     switch (table) {
@@ -47,6 +47,22 @@ export default async function FormContainer({ table, type, data, id }:
             const fetchLessonTeacher = await fetchAllTeachers();
             const fetchLessonSubject = await fetchAllSubjects();
             relatedData = { classes: fetchLessonClass, subjects: fetchLessonSubject, teachers: fetchLessonTeacher };
+            break;
+        case 'exam':
+            const fetchExamLesson = await fetchAllLessons();
+            relatedData = {lessons: fetchExamLesson};
+            break;
+        case 'assignment':
+            const fetchAssignmentLesson = await fetchAllLessons();
+            relatedData = {lessons: fetchAssignmentLesson};
+            break;
+        case 'event':
+            const fetchEventClass = await fetchAllClasses();
+            relatedData = {classes: fetchEventClass};
+            break;
+        case 'announcement':
+            const fetchAnnouncementClass = await fetchAllClasses();
+            relatedData = {classes: fetchAnnouncementClass};
             break;
     }
 

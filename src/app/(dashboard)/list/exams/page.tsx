@@ -3,11 +3,11 @@ import React from 'react'
 import Image from 'next/image'
 import Pagination from '@/app/components/Pagination'
 import Table from '@/app/components/Table'
-import FormModel from '@/app/components/FormModel'
 import prisma from '@/lib/prisma'
 import { ITEM_PER_PAGE } from '@/lib/setting'
 import { Class, Exam, Prisma, Subject, Teacher } from '@/generated/prisma'
 import getRole, { getUserId } from '@/lib/utils'
+import FormContainer from '@/app/components/FormContainer'
 // Exam model or type 
 type examList = Exam & {
     lesson: {
@@ -138,16 +138,18 @@ const ExamsListPage = async ({ searchParams }: { searchParams: { [key: string]: 
     const renderRow = (item: examList) => (
         <tr className='text-sm odd:bg-white even:bg-gray-200 p-2 h-10 hover:bg-blue-50' key={item.id}>
             <td className='font-semibold'>{item.title}</td>
-            <td className='font-semibold'>{item.lesson.Subject.name}</td>
-            <td className='hidden md:table-cell'>{item.lesson.class.name}</td>
-            <td className='hidden lg:table-cell'>{item.lesson.teacher.name + " " + item.lesson.teacher.surname}</td>
-            <td className='hidden lg:table-cell'>{new Intl.DateTimeFormat('en-US').format(item.startTime)}</td>
+            <td className='font-semibold'>{item?.lesson?.Subject?.name}</td>
+            <td className='hidden md:table-cell'>{item?.lesson?.class?.name}</td>
+            <td className='hidden lg:table-cell'>{item?.lesson?.teacher? 
+                item?.lesson?.teacher?.name + " " + item?.lesson?.teacher?.surname 
+                : 'Not assigned'}</td>
+            <td className='hidden lg:table-cell'>{new Intl.DateTimeFormat('en-US').format(item?.startTime)}</td>
             <td>
                 <div className='flex gap-3 items-center'>
                     {(role === 'admin' || role === 'teacher') && (
                         <>
-                            <FormModel table='exam' type='delete' data={item} id={item.id} />
-                            <FormModel table='exam' type='update' data={item} id={item.id} />
+                            <FormContainer table='exam' type='delete' data={item} id={item.id} />
+                            <FormContainer table='exam' type='update' data={item} id={item.id} />
                         </>
                     )}
                 </div>
@@ -169,7 +171,7 @@ const ExamsListPage = async ({ searchParams }: { searchParams: { [key: string]: 
                             <Image src={'/sort.png'} alt='filter' width={18} height={18} />
                         </button>
                         {(role === 'admin' || role === 'teacher') && (
-                            <FormModel table='exam' type='create' />
+                            <FormContainer table='exam' type='create' />
                         )}
                     </div>
                 </div>
