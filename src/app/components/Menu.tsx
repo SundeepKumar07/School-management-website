@@ -83,7 +83,7 @@ const menuItems = [
       {
         icon: "/message.png",
         label: "Messages",
-        href: "/list/messages",
+        href: "/admin",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
@@ -100,13 +100,13 @@ const menuItems = [
       {
         icon: "/profile.png",
         label: "Profile",
-        href: "/profile",
+        href: "/admin",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/setting.png",
         label: "Settings",
-        href: "/settings",
+        href: "/admin",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
@@ -131,8 +131,8 @@ const Menu = async () => {
               if (mainItem.title === 'OTHER' && item.label === 'Logout')
                   return (
                     <div key={item.label} className="cursor-pointer flex gap-2 justify-center items-center lg:justify-start lg:pl-3 rounded-md hover:bg-gray-100">
-                      <Image src={'/logout.png'} alt="icon" width={20} height={20} />
                       <SignOutButton/>
+                      <span className="hidden lg:block">{item.label}</span>
                     </div>
                   )
               return (
