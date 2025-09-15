@@ -10,7 +10,7 @@ export type AdminPageProps = {
   searchParams?: { [key: string]: string | undefined };
 };
 
-export default async function ({ searchParams }: AdminPageProps) {
+export default async function (searchParams: Promise<Record<string, string | string[] | undefined>>) {
   const resolved = await searchParams;
 
   // ✅ flatten string[] into string
