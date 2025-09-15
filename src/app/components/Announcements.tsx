@@ -1,7 +1,11 @@
 import prisma from '@/lib/prisma';
 import React from 'react'
 
-export default async function Announcements({dateParams}: {dateParams: {[key: string]: string | undefined}}) {
+type AnnouncementsProps = {
+  dateParams: { [key: string]: string | undefined }  // normal object
+}
+
+export default async function Announcements({ dateParams }: AnnouncementsProps) {
   const dateString = dateParams?.date;
   const date = dateString ? new Date(dateString) : new Date();
 
