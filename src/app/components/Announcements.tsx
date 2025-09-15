@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import React from 'react'
 
 type AnnouncementProps = {
-  dateParams: { [key: string]: string | undefined };
+  dateParams?: { [key: string]: string | undefined };
 };
 
 export default async function Announcements({dateParams}: AnnouncementProps) {
