@@ -174,7 +174,7 @@ const attendenceListPage = async (props: {
         <div className='rounded-md bg-white p-4 mt-2 mx-2 flex flex-col'>
             {/* top */}
             <div className='flex flex-col md:flex-row justify-between'>
-                <h1 className='font-semibold'>All Events</h1>
+                <h1 className='font-semibold'>All Attendences</h1>
                 <div className='flex flex-col md:flex-row gap-2'>
                     <TableSearch />
                     <div className='flex gap-2 justify-end'>
@@ -188,9 +188,9 @@ const attendenceListPage = async (props: {
                 </div>
             </div>
             {(role === 'admin' || role === 'teacher') &&
-                <div className='flex items-center justify-between'>
+                <div className='flex flex-col-reverse md:items-center justify-between md:flex-row'>
                     <AttendenceFilterContainer type={'read'} />
-                    <Link href={'/list/mark-attendence'} className='flex items-center bg-green-200 mt-4 py-1 px-2 rounded-md'>
+                    <Link href={'/list/mark-attendence'} className='flex items-center bg-green-200 mt-2 md:mt-4 py-1 px-2 rounded-md w-full md:w-45'>
                         Go to Attendence
                     </Link>
                 </div>

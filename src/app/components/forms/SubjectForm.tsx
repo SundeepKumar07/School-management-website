@@ -43,7 +43,7 @@ const SubjectForm = ({ type, data, setOpen, teachers }: { type: "create" | "upda
     useEffect(() => {
         if (state.success && setOpen) {
             setOpen(false);
-            toast.success("Event created!", {
+            toast.success("Subject created!", {
                 style: {
                     background: "#e8f5e9",   // light green background
                     color: "#2e7d32",        // text color

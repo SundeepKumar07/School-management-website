@@ -112,7 +112,7 @@ const AttendenceForm = ({ students, lessonId }: { students: any, lessonId: strin
       <table>
         <thead>
           <tr className='bg-green-200 h-8 font-semibold text-sm sm:text-md'>
-            <td className='pl-2'>ID</td>
+            <td className='pl-2 hidden md:table-cell'>ID</td>
             <td>Images</td>
             <td>Name</td>
             <td className='hidden sm:table-cell'>Email</td>
@@ -122,7 +122,7 @@ const AttendenceForm = ({ students, lessonId }: { students: any, lessonId: strin
         <tbody className='text-sm sm:text-md'>
           {students.map((student: Student, index: number) => (
             <tr key={student.id} className='h-8 even:bg-white'>
-              <td className='pl-2'>
+              <td className='pl-2 hidden md:table-cell'>
                 <input
                   type="hidden"
                   {...register(`studentId.${index}`)}

@@ -39,25 +39,25 @@ export default function AttendenceFilter({
     };
 
     return (
-        <div className="flex pt-4">
-            <form onSubmit={handleSubmit} className="flex gap-1 items-center">
-                <div className="flex gap-2 items-center">
+        <div className="flex pt-4 w-full">
+            <form onSubmit={handleSubmit} className="flex gap-0.5 items-center flex-col md:flex-row w-full md:w-md">
+                <div className="flex gap-3 items-center flex-col md:flex-row w-full">
                     {type === 'read' &&
-                        <div>
+                        <div className="w-full">
                             <input
                                 type="date"
                                 value={selectedDate}
                                 onChange={(e) => setSelectedDate(e.target.value)}
-                                className="ring-2 outline-none ring-purple-500 bg-purple-200 py-0.5 px-2 rounded-md"
+                                className="ring-2 outline-none ring-purple-500 bg-purple-200 py-0.5 px-2 rounded-md w-full"
                             />
                         </div>
                     }
                     {/* Class Dropdown */}
-                    <div className="flex gap-2 flex-col">
+                    <div className="flex gap-2 flex-col w-full">
                         <select
                             defaultValue=""
                             onChange={(e) => handleClassChange(Number(e.target.value))}
-                            className="ring-2 outline-none ring-blue-500 bg-blue-200 py-1 px-2 rounded-md"
+                            className="ring-2 outline-none ring-blue-500 bg-blue-200 py-1 px-2 rounded-md w-full"
                         >
                             <option value="" disabled>
                                 Select a class
@@ -76,7 +76,7 @@ export default function AttendenceFilter({
                             <select
                                 defaultValue=""
                                 onChange={(e) => setSelectedLesson(Number(e.target.value))}
-                                className="ring-2 outline-none ring-green-500 bg-green-200 py-1 px-2 rounded-md"
+                                className="ring-2 outline-none ring-green-500 bg-green-200 py-1 px-2 rounded-md w-full"
                             >
                                 <option value="" disabled>
                                     Select a lesson
@@ -92,7 +92,7 @@ export default function AttendenceFilter({
                 </div>
                 <button
                     type="submit"
-                    className="bg-black text-white py-1 px-2 rounded-md"
+                    className="bg-black text-white py-1 px-2 rounded-md w-full md:w-30"
                 >
                     Apply
                 </button>

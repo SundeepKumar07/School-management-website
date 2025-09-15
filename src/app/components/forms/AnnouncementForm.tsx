@@ -52,7 +52,7 @@ const AnnouncementForm = ({ type, data, setOpen, relatedData }:
     useEffect(() => {
         if (state.success && setOpen) {
             setOpen(false);
-            toast.success("Event created!", {
+            toast.success("Announcement created!", {
                 style: {
                     background: "#e8f5e9",   // light green background
                     color: "#2e7d32",        // text color
