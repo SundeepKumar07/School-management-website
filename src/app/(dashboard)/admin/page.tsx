@@ -10,15 +10,19 @@ export type AdminPageProps = {
   searchParams?: { [key: string]: string | undefined };
 };
 
-export default async function (searchParams: Promise<Record<string, string | string[] | undefined>>) {
-  const resolved = await searchParams;
+export default async function (props: {
+  params: Promise<{ slug?: string }>   // or whatever dynamic route shape
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const searchParams = await props.searchParams
 
-  // ✅ flatten string[] into string
-  const normalized: { [key: string]: string | undefined } = {};
-  for (const key in resolved) {
-    const value = resolved[key];
-    normalized[key] = Array.isArray(value) ? value[0] : value;
+  // ✅ Normalize string[] -> string
+  const normalized: { [key: string]: string | undefined } = {}
+  for (const key in searchParams ?? {}) {
+    const value = searchParams[key]
+    normalized[key] = Array.isArray(value) ? value[0] : value
   }
+
   return (
     <div className='flex flex-col md:flex-row gap-4 sm:gap-4 p-2 overflow-hidden'>
       <div className='w-full md:w-2/3 flex flex-col gap-4'>
