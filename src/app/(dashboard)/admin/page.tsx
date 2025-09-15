@@ -6,7 +6,12 @@ import StudentCountContainer from '@/app/components/StudentCountContainer'
 import UserCard from '@/app/components/UserCard'
 import React from 'react'
 
-export default async function ({searchParams}: {searchParams: {[key: string]: string | undefined}}) {
+export type AdminPageProps = {
+  searchParams?: { [key: string]: string | undefined };
+};
+
+export default async function ({searchParams}: AdminPageProps) {
+  const pageParams = await searchParams ?? {};
   return (
     <div className='flex flex-col md:flex-row gap-4 sm:gap-4 p-2 overflow-hidden'>
         <div className='w-full md:w-2/3 flex flex-col gap-4'>
@@ -29,8 +34,8 @@ export default async function ({searchParams}: {searchParams: {[key: string]: st
           </div>
         </div>
         <div className='w-full md:w-1/3 md:h-230 lg:h-200 overflow-scroll flex flex-col gap-2 pr-2'>
-          <EventCalendarContainer dateParams={await searchParams}/>
-          <Announcements dateParams={await searchParams}/>
+          <EventCalendarContainer dateParams={pageParams}/>
+          <Announcements dateParams={pageParams}/>
         </div>
     </div>
   )

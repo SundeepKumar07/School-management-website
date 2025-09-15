@@ -2,7 +2,11 @@ import React from 'react'
 import EventList from './EventList'
 import EventCalendar from './EventCalendar'
 
-const EventCalendarContainer = ({dateParams}: {dateParams: {[key: string]: string | undefined}}) => {
+type EventCalendarProps = {
+  dateParams: { [key: string]: string | undefined };
+};
+
+const EventCalendarContainer = ({dateParams}: EventCalendarProps) => {
   return (
     <div className='flex flex-col gap-2'>
         <EventCalendar/>
