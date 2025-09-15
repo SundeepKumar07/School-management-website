@@ -4,8 +4,11 @@ import Link from 'next/link'
 import Performance from '@/app/components/Performance'
 import BigCalendarContainer from '@/app/components/BigCalendarContainer'
 import prisma from '@/lib/prisma'
-export default async function SingleTeacherPage({params}: {params: {id: string}}) {
-  const { id } = await params;
+export default async function SingleTeacherPage(props: {
+    params: Promise<{ id?: string }>   // or whatever dynamic route shape
+    searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const { id } = await props.params;
   
   //=========== fetching teacher =============
   const teacher = await prisma.teacher.findUnique({

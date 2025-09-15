@@ -13,9 +13,20 @@ import FormContainer from '@/app/components/FormContainer'
 // Subject model or type 
 type subjectList = Subject & { teachers: Teacher[] } & { lessons: Lesson[] }
 
-const SubjectListPage = async ({ searchParams }: { searchParams: { [key: string]: string | undefined }; }) => {
+const SubjectListPage = async (props: {
+    params: Promise<{ slug?: string }>   // or whatever dynamic route shape
+    searchParams: Promise<Record<string, string | string[] | undefined>>
+}) => {
     const role = await getRole();
-    const { page, ...queryParams } = await searchParams;
+    const searchParams = await props.searchParams
+
+    // ✅ Normalize string[] -> string
+    const normalized: { [key: string]: string | undefined } = {}
+    for (const key in searchParams ?? {}) {
+        const value = searchParams[key]
+        normalized[key] = Array.isArray(value) ? value[0] : value
+    }
+    const { page, ...queryParams } = normalized;
     const pageParam = page ? parseInt(page) : 1;
     const query: Prisma.SubjectWhereInput = {};
     if (queryParams) {

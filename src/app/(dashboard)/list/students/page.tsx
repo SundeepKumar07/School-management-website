@@ -12,10 +12,21 @@ import Link from 'next/link'
 
 type studentList = Student & { class: Class } & { grade: Grade };
 
-const StudentsListPage = async ({ searchParams }: { searchParams: { [key: string]: string | undefined }; }) => {
+const StudentsListPage = async (props: {
+    params: Promise<{ slug?: string }>   // or whatever dynamic route shape
+    searchParams: Promise<Record<string, string | string[] | undefined>>
+}) => {
     const role = await getRole();
     const userId = await getUserId();
-    const { page, ...queryParams } = await searchParams;
+    const searchParams = await props.searchParams
+
+    // ✅ Normalize string[] -> string
+    const normalized: { [key: string]: string | undefined } = {}
+    for (const key in searchParams ?? {}) {
+        const value = searchParams[key]
+        normalized[key] = Array.isArray(value) ? value[0] : value
+    }
+    const { page, ...queryParams } = await normalized;
     const pageParam = page ? parseInt(page) : 1;
     const query: Prisma.StudentWhereInput = {};
     if (queryParams) {
@@ -87,7 +98,7 @@ const StudentsListPage = async ({ searchParams }: { searchParams: { [key: string
                 <div className='flex gap-3 items-center'>
                     <Link href={`/list/students/${item.id}`}>
                         <button className='cursor-pointer' title='view'>
-                            <Image src={'/view.png'} alt='view' width={20} height={20} className='rounded-full'/>
+                            <Image src={'/view.png'} alt='view' width={20} height={20} className='rounded-full' />
                         </button>
                     </Link>
                     {role === 'admin' && (

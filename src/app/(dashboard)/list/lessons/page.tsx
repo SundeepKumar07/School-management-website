@@ -11,10 +11,21 @@ import FormContainer from '@/app/components/FormContainer'
 // Lessons model or type 
 type lessonList = Lesson & { teacher: Teacher } & { class: Class } & { Subject: Subject };
 
-const LessonsListPage = async ({ searchParams }: { searchParams: { [key: string]: string | undefined }; }) => {
+const LessonsListPage = async (props: {
+    params: Promise<{ slug?: string }>   // or whatever dynamic route shape
+    searchParams: Promise<Record<string, string | string[] | undefined>>
+}) => {
     const role = await getRole();
     const userId = await getUserId();
-    const { page, ...queryParams } = await searchParams;
+    const searchParams = await props.searchParams
+
+    // ✅ Normalize string[] -> string
+    const normalized: { [key: string]: string | undefined } = {}
+    for (const key in searchParams ?? {}) {
+        const value = searchParams[key]
+        normalized[key] = Array.isArray(value) ? value[0] : value
+    }
+    const { page, ...queryParams } = normalized;
     const pageParam = page ? parseInt(page) : 1;
     const query: Prisma.LessonWhereInput = {};
     if (queryParams) {
@@ -45,7 +56,7 @@ const LessonsListPage = async ({ searchParams }: { searchParams: { [key: string]
             }
         }
     }
-    switch(role){
+    switch (role) {
         case 'teacher':
             query.teacherId = userId?.toString();
             break;
@@ -98,7 +109,7 @@ const LessonsListPage = async ({ searchParams }: { searchParams: { [key: string]
             <td className='font-semibold'>{item.name}</td>
             <td className='font-semibold'>{item?.Subject?.name}</td>
             <td className='hidden md:table-cell'>{item?.class?.name}</td>
-            <td className='hidden lg:table-cell'>{item?.teacher? item?.teacher?.name + " " + item?.teacher?.surname : 'Not Assigned'}</td>
+            <td className='hidden lg:table-cell'>{item?.teacher ? item?.teacher?.name + " " + item?.teacher?.surname : 'Not Assigned'}</td>
             <td>
                 <div className='flex gap-3 items-center'>
                     {role === 'admin' && (

@@ -11,10 +11,21 @@ import FormContainer from '@/app/components/FormContainer'
 // Classes model or type 
 type classList = Class & { students: Student[] } & { grade: Grade, supervisor: Teacher } & { lessons: Lesson[] }
 
-const ClassesListPage = async ({ searchParams }: { searchParams: { [key: string]: string | undefined }; }) => {
+const ClassesListPage = async (props: {
+    params: Promise<{ slug?: string }>   // or whatever dynamic route shape
+    searchParams: Promise<Record<string, string | string[] | undefined>>
+}) => {
     const userId = await getUserId();
     const role = await getRole();
-    const { page, ...queryParams } = await searchParams;
+    const searchParams = await props.searchParams
+
+    // ✅ Normalize string[] -> string
+    const normalized: { [key: string]: string | undefined } = {}
+    for (const key in searchParams ?? {}) {
+        const value = searchParams[key]
+        normalized[key] = Array.isArray(value) ? value[0] : value
+    }
+    const { page, ...queryParams } = normalized;
     const pageParam = page ? parseInt(page) : 1;
     const query: Prisma.ClassWhereInput = {};
     if (queryParams) {
@@ -36,7 +47,7 @@ const ClassesListPage = async ({ searchParams }: { searchParams: { [key: string]
             }
         }
     }
-    switch(role){
+    switch (role) {
         case 'teacher':
             query.lessons = {
                 some: {

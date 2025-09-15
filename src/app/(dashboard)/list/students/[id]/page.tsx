@@ -6,8 +6,12 @@ import BigCalendarContainer from '@/app/components/BigCalendarContainer'
 import prisma from '@/lib/prisma'
 import { Suspense } from 'react'
 import { StudentAttendenceCard } from '@/app/components/StudentAttendenceCard'
-export default async function SingleTeacherPage({params}: {params: {id: string}}) {
-  const { id } = await params;
+export default async function SingleTeacherPage(props: {
+  params: Promise<{ id?: string }>   // or whatever dynamic route shape
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  console.log(props.params)
+ const { id } = await props.params;
   const student = await prisma.student.findUnique({
     where: {
       id,

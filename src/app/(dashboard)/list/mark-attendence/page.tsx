@@ -4,9 +4,20 @@ import { Prisma, Student } from '@/generated/prisma';
 import prisma from '@/lib/prisma';
 import React from 'react'
 
-const MarkAttendencePage = async ({ searchParams }: { searchParams: { [key: string]: string | undefined }}) => {
+const MarkAttendencePage = async (props: {
+  params: Promise<{ slug?: string }>   // or whatever dynamic route shape
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) => {
   let students: Student[] = [];
-  const queryParams = await searchParams;
+  const searchParams = await props.searchParams
+
+  // ✅ Normalize string[] -> string
+  const normalized: { [key: string]: string | undefined } = {}
+  for (const key in searchParams ?? {}) {
+    const value = searchParams[key]
+    normalized[key] = Array.isArray(value) ? value[0] : value
+  }
+  const queryParams = normalized;
   const query: Prisma.StudentWhereInput = {};
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -35,7 +46,7 @@ const MarkAttendencePage = async ({ searchParams }: { searchParams: { [key: stri
       prisma.student.findMany({
         where: query,
         include: {
-          class: {select: {name: true}}
+          class: { select: { name: true } }
         }
       }),
       prisma.student.count({ where: query })
@@ -47,11 +58,11 @@ const MarkAttendencePage = async ({ searchParams }: { searchParams: { [key: stri
     <div>
       <AttendenceFilterContainer />
       <div>
-        {students.length !== 0?
-          <AttendenceForm students={students} lessonId={queryParams.lessonId}/>
-          : queryParams.lessonId && students.length === 0?
+        {students.length !== 0 ?
+          <AttendenceForm students={students} lessonId={queryParams.lessonId} />
+          : queryParams.lessonId && students.length === 0 ?
             <div className='flex items-center justify-center text-xl font-semibold h-10 m-2'>Student Not found</div>
-          : <div className='flex items-center justify-center text-xl font-semibold h-10 m-2'>Select both class and lesson</div>
+            : <div className='flex items-center justify-center text-xl font-semibold h-10 m-2'>Select both class and lesson</div>
         }
       </div>
     </div>

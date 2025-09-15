@@ -16,10 +16,21 @@ type attendenceList = Attendence & { lesson: Lesson } & { student: Student } & {
     }
 };
 
-const attendenceListPage = async ({ searchParams }: { searchParams: { [key: string]: string | undefined }; }) => {
+const attendenceListPage = async (props: {
+    params: Promise<{ slug?: string }>   // or whatever dynamic route shape
+    searchParams: Promise<Record<string, string | string[] | undefined>>
+}) => {
     const role = await getRole();
     const userId = await getUserId();
-    const { page, ...queryParams } = await searchParams;
+    const searchParams = await props.searchParams
+
+    // ✅ Normalize string[] -> string
+    const normalized: { [key: string]: string | undefined } = {}
+    for (const key in searchParams ?? {}) {
+        const value = searchParams[key]
+        normalized[key] = Array.isArray(value) ? value[0] : value
+    }
+    const { page, ...queryParams } = normalized;
     const pageParam = page ? parseInt(page) : 1;
     const query: Prisma.AttendenceWhereInput = {};
     if (queryParams) {
@@ -178,9 +189,9 @@ const attendenceListPage = async ({ searchParams }: { searchParams: { [key: stri
             </div>
             {(role === 'admin' || role === 'teacher') &&
                 <div className='flex items-center justify-between'>
-                    <AttendenceFilterContainer type={'read'}/>
+                    <AttendenceFilterContainer type={'read'} />
                     <Link href={'/list/mark-attendence'} className='flex items-center bg-green-200 mt-4 py-1 px-2 rounded-md'>
-                            Go to Attendence
+                        Go to Attendence
                     </Link>
                 </div>
             }
