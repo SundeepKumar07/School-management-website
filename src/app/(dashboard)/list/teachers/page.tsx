@@ -144,7 +144,7 @@ const TeachersListPage = async (props: {
     )
 
     return (
-        <div className='rounded-md bg-white p-4 mt-2 mx-2 flex flex-col'>
+        <div className='rounded-md bg-white p-4 mt-2 md:mx-2 flex flex-col'>
             {/* top */}
             <div className='flex flex-col md:flex-row justify-between'>
                 <h1 className='font-semibold'>All Teachers</h1>

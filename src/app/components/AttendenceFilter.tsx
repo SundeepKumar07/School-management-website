@@ -70,7 +70,7 @@ export default function AttendenceFilter({
                         </select>
                     </div>
 
-                    <div className="flex gap-2 flex-col">
+                    <div className="flex gap-2 flex-col w-full">
                         {/* Lesson Dropdown (only show if class selected) */}
                         {selectedClass && (
                             <select
