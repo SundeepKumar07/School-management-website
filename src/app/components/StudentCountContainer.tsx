@@ -26,7 +26,7 @@ const StudentCountContainer = async () => {
 
             <div>
                 <Image
-                    src="/malefemale.png"
+                    src="/maleFemale.png"
                     alt="students"
                     width={20}
                     height={20}
